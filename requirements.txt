@@ -1,0 +1,5 @@
+cookiecutter
+pyroomacoustics
+numpy
+matplotlib
+soundfile
