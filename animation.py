@@ -1,7 +1,7 @@
 from manim import *
 
 
-class AcousticSimulationExplaination(ThreeDScene):
+class AcousticSimulationExplanation(ThreeDScene):
     def construct(self):
         # Source dot and label
         source = Dot([3, 0, 1], 0.1, fill_opacity=1, color=RED)
@@ -43,33 +43,10 @@ class AcousticSimulationExplaination(ThreeDScene):
 
         self.play(LaggedStart(*animations, lag_ratio=0.5), run_time=14)
 
-        line1 = Line(source.get_center(), mic1.get_center(), color=YELLOW)
-        brace1 = Brace(line1, direction=line1.copy().rotate(-PI / 2).get_unit_vector())
-        line1_text = brace1.get_text("time \(t_1\)")
-        self.play(Create(line1), FadeIn(brace1))
-        self.play(FadeIn(line1_text))
-
-        self.wait(1)
-
-        self.remove(line1, brace1, line1_text)
-
-        line2 = Line(source.get_center(), mic2.get_center(), color=YELLOW)
-        brace2 = Brace(line2, direction=line2.copy().rotate(-PI / 2).get_unit_vector())
-        line2_text = brace2.get_text("time \(t_2\)")
-        self.play(Create(line2), FadeIn(brace2))
-        self.play(FadeIn(line2_text))
-
-        self.wait(1)
-        self.remove(line2, brace2, line2_text)
-
-        line3 = Line(source.get_center(), mic3.get_center(), color=YELLOW)
-        brace3 = Brace(line3, direction=line3.copy().rotate(-PI / 2).get_unit_vector())
-        line3_text = brace3.get_text("time \(t_3\)")
-        self.play(Create(line3), FadeIn(brace3))
-        self.play(FadeIn(line3_text))
-
-        self.wait(1)
-        self.remove(line3, brace3, line3_text)
+        # Draw lines and labels
+        self.add_lines_with_labels(source, mic1, "time \(t_1\)")
+        self.add_lines_with_labels(source, mic2, "time \(t_2\)")
+        self.add_lines_with_labels(source, mic3, "time \(t_3\)")
 
         self.move_camera(zoom=2.5, frame_center=mic1.get_center(), run_time=2)
 
@@ -77,13 +54,22 @@ class AcousticSimulationExplaination(ThreeDScene):
             [mic1.get_center()[0], mic1.get_center()[1], mic1.get_center()[2] + 1],
             color=RED,
         )
+        point1_label = Text("mic 1", font_size=18, color=GREEN).next_to(
+            point1_dot, RIGHT
+        )
         point2_dot = Dot3D(
             [mic1.get_center()[0], mic1.get_center()[1] + 1, mic1.get_center()[2]],
             color=GREEN,
         )
+        point2_label = Text("mic 2", font_size=18, color=GREEN).next_to(
+            point2_dot, RIGHT
+        )
         point3_dot = Dot3D(
             [mic1.get_center()[0] + 1, mic1.get_center()[1], mic1.get_center()[2]],
             color=BLUE,
+        )
+        point3_label = Text("mic 3", font_size=18, color=GREEN).next_to(
+            point3_dot, RIGHT
         )
 
         axes = ThreeDAxes()
@@ -92,15 +78,38 @@ class AcousticSimulationExplaination(ThreeDScene):
         self.remove(mic2, mic2_label, mic3, mic3_label)
 
         self.add(axes)
-        self.play(FadeIn(point1_dot, point2_dot, point3_dot))
+        self.play(
+            FadeIn(
+                point1_dot,
+                point2_dot,
+                point3_dot,
+            )
+        )
+
         self.remove(mic1, mic1_label)
         self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES, run_time=2)
-
+        self.add_fixed_orientation_mobjects(point1_label, point2_label, point3_label)
+        self.play(
+            FadeIn(
+                point1_label,
+                point2_label,
+                point3_label,
+            )
+        )
         text3d = Text(
-            "Each array can locate the source independently.\nEach array utilizes at least 3 mics.",
+            "Each array can locate the sound source independently & utilizes at least 3 mics.",
             font_size=18,
         )
         self.add_fixed_in_frame_mobjects(text3d)
-        text3d.to_edge(DOWN + LEFT)
+        text3d.to_edge(DOWN + RIGHT)
 
         self.wait(2)
+
+    def add_lines_with_labels(self, start_point, end_point, label):
+        line = Line(start_point.get_center(), end_point.get_center(), color=YELLOW)
+        brace = Brace(line, direction=line.copy().rotate(-PI / 2).get_unit_vector())
+        line_text = brace.get_text(label)
+        self.play(Create(line), FadeIn(brace))
+        self.play(FadeIn(line_text))
+        self.wait(1)
+        self.remove(line, brace, line_text)
