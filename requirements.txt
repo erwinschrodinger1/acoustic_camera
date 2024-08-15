@@ -3,3 +3,7 @@ pyroomacoustics
 numpy
 matplotlib
 soundfile
+ipykernel
+sounddevice
+pyaudio
+manim
